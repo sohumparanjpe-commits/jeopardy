@@ -165,137 +165,133 @@
 
     const POINT_VALUES = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
 
-    // GENERATE 100 QUESTIONS PER TIER PER CATEGORY
+    // DYNAMICALLY GENERATE 100 UNIQUE QUESTIONS PER TIER PER CATEGORY
     function buildQuestionBank() {
       const bank = {};
-      
-      const seedData = {
-        "Math": [
-          { q: "What is 5 + 5?", a: "10" },
-          { q: "How many sides does a triangle have?", a: "3" },
-          { q: "What is 100 divided by 10?", a: "10" },
-          { q: "What is 9 squared (9 x 9)?", a: "81" },
-          { q: "How many degrees are in a right angle?", a: "90 degrees" },
-          { q: "What is 12 multiplied by 5?", a: "60" },
-          { q: "What is the square root of 49?", a: "7" },
-          { q: "What is 2 to the power of 4?", a: "16" },
-          { q: "What is the square root of 100?", a: "10" },
-          { q: "What mathematical constant is roughly equal to 3.14?", a: "Pi (π)" }
-        ],
-        "Science": [
-          { q: "What planet is known as the Red Planet?", a: "Mars" },
-          { q: "What chemical formula represents water?", a: "H2O" },
-          { q: "What force pulls objects down toward Earth?", a: "Gravity" },
-          { q: "What process do plants use to make food using sunlight?", a: "Photosynthesis" },
-          { q: "What is the largest organ of the human body?", a: "Skin" },
-          { q: "What organelle is called the powerhouse of the cell?", a: "Mitochondria" },
-          { q: "What chemical element has the symbol 'Au'?", a: "Gold" },
-          { q: "Which blood cells help fight infection in the human body?", a: "White blood cells" },
-          { q: "What is the center of an atom called?", a: "Nucleus" },
-          { q: "What is the most abundant element in the universe?", a: "Hydrogen" }
-        ],
-        "English Literature": [
-          { q: "Who wrote 'Romeo and Juliet'?", a: "William Shakespeare" },
-          { q: "What type of word describes a noun?", a: "Adjective" },
-          { q: "Who created the detective Sherlock Holmes?", a: "Arthur Conan Doyle" },
-          { q: "In what book does a boy fly away to Neverland?", a: "Peter Pan" },
-          { q: "Who wrote 'The Hobbit' and 'The Lord of the Rings'?", a: "J.R.R. Tolkien" },
-          { q: "Which famous novel features Captain Ahab hunting a white whale?", a: "Moby-Dick" },
-          { q: "What is the title of the monster built by Victor in Mary Shelley's novel?", a: "Frankenstein's Monster" },
-          { q: "Who wrote '1984' and 'Animal Farm'?", a: "George Orwell" },
-          { q: "Who wrote 'The Great Gatsby'?", a: "F. Scott Fitzgerald" },
-          { q: "Who wrote 'To Kill a Mockingbird'?", a: "Harper Lee" }
-        ],
-        "History": [
-          { q: "Who was the first President of the United States?", a: "George Washington" },
-          { q: "Which ship sank in 1912 after hitting an iceberg?", a: "Titanic" },
-          { q: "What ocean was crossed by Christopher Columbus in 1492?", a: "Atlantic Ocean" },
-          { q: "In which year did World War II end?", a: "1945" },
-          { q: "Which empire built the Colosseum in Rome?", a: "Roman Empire" },
-          { q: "Who was the first person to step on the Moon in 1969?", a: "Neil Armstrong" },
-          { q: "Who led India to independence through non-violent resistance?", a: "Mahatma Gandhi" },
-          { q: "Which ancient civilization built Machu Picchu in Peru?", a: "Inca" },
-          { q: "What conflict was fought between Northern and Southern U.S. states (1861-1865)?", a: "American Civil War" },
-          { q: "What period of cultural 'rebirth' occurred in Europe after the Middle Ages?", a: "The Renaissance" }
-        ],
-        "Diwali & Hinduism": [
-          { q: "Diwali celebrates the festival of what?", a: "Lights" },
-          { q: "What elephant-headed deity is worshipped for wisdom and good fortune?", a: "Lord Ganesha" },
-          { q: "Which sacred scripture contains the divine dialogue between Lord Krishna and Arjuna?", a: "Bhagavad Gita" },
-          { q: "Who is known as the Destroyer in the Hindu Trinity (Trimurti)?", a: "Lord Shiva" },
-          { q: "Which avatar of Lord Vishnu emerged from a pillar as half-man, half-lion to protect Prahlad?", a: "Narasimha" },
-          { q: "What festival of colors celebrates the arrival of spring and victory of good over evil?", a: "Holi" },
-          { q: "Which archer prince was guided by Lord Krishna on the battlefield of Kurukshetra?", a: "Arjuna" },
-          { q: "Goddess Saraswati is worshipped as the deity of knowledge, arts, and what?", a: "Music" },
-          { q: "What 9-night festival is dedicated to the worship of Goddess Durga and her avatars?", a: "Navratri" },
-          { q: "What fundamental concept in Hinduism refers to moral duty, righteousness, and cosmic law?", a: "Dharma" }
-        ],
-        "Potpourri": [
-          { q: "How many colors are in a standard rainbow?", a: "7" },
-          { q: "What instrument has 88 keys?", a: "Piano" },
-          { q: "How many pieces does each player start with in Chess?", a: "16" },
-          { q: "Which animal is known as the 'Ship of the Desert'?", a: "Camel" },
-          { q: "How many dots are on a single standard die?", a: "21" },
-          { q: "What popular board game features mascot Rich Uncle Pennybags?", a: "Monopoly" },
-          { q: "How many rings make up the Olympic symbol?", a: "5" },
-          { q: "What famous tower in Paris was built for the 1889 World's Fair?", a: "Eiffel Tower" },
-          { q: "Which country gifted the Statue of Liberty to the USA?", a: "France" },
-          { q: "What instrument has 6 strings standardly and is strummed?", a: "Guitar" }
-        ],
-        "Complete Bollywood Title": [
-          { q: "Dilwale Dulhania Le _____", a: "Jayenge" },
-          { q: "Jab We _____", a: "Met" },
-          { q: "Kuch Kuch Hota _____", a: "Hai" },
-          { q: "Yeh Jawaani Hai _____", a: "Deewani" },
-          { q: "Chak De! _____", a: "India" },
-          { q: "Taare Zameen _____", a: "Par" },
-          { q: "Lagaan: Once Upon a Time in _____", a: "India" },
-          { q: "Sholay: Ye Dosti Hum Nahi _____", a: "Todenge" },
-          { q: "Gully _____", a: "Boy" },
-          { q: "Dangal: Mhari Choriyan Chhoron Se Kam _____", a: "Hain Ke" }
-        ],
-        "Bad Movie Plots": [
-          { q: "An elderly man ties thousands of balloons to his house to run away from a nursing home.", a: "Up" },
-          { q: "A green ogre gets mad when squatters occupy his swamp, so he goes on a quest to get his land back.", a: "Shrek" },
-          { q: "A billionaire dresses up as a bat to combat crime in a city with terrible mental health care.", a: "The Dark Knight / Batman" },
-          { q: "A sister ruins a wedding by freezing the entire kingdom because she got overwhelmed.", a: "Frozen" },
-          { q: "An orphan finds out he's famous, moves to a magic boarding school, and fights a guy with no nose.", a: "Harry Potter" },
-          { q: "A lion cub runs away from home after his uncle gaslights him about his dad's death.", a: "The Lion King" },
-          { q: "A girl falls in love with a 100-year-old vampire who sparkles in the sun.", a: "Twilight" },
-          { q: "A man talks to a volleyball for 4 years after crashing on a desert island.", a: "Cast Away" },
-          { q: "A group of toys suffer a midlife crisis when their kid grows up and goes to college.", a: "Toy Story 3" },
-          { q: "A giant boat hits an iceberg because two people were distracted in the back of a car.", a: "Titanic" }
-        ],
-        "Bollywood Movie Plots": [
-          { q: "An NRI travels to Punjab to convince an angry uncle to let him marry his daughter instead of running away.", a: "Dilwale Dulhania Le Jayenge (DDLJ)" },
-          { q: "Three engineering students deal with an oppressive college director while searching for their lost best friend years later.", a: "3 Idiots" },
-          { q: "A British officer challenges starving Indian villagers to a game of cricket to avoid high taxes.", a: "Lagaan" },
-          { q: "Two mercenaries are hired by a retired lawman to capture a notorious bandit who chopped off his arms.", a: "Sholay" },
-          { q: "A former hockey player seeking redemption coaches an underfunded women's team to World Cup victory.", a: "Chak De! India" },
-          { q: "A strict father trains his two daughters in dirt wrestling to win international gold medals for India.", a: "Dangal" },
-          { q: "A street rapper from the slums of Mumbai uses battle rap to overcome poverty and family struggles.", a: "Gully Boy" },
-          { q: "Three wealthy college buddies take a bachelor road trip across Spain and participate in extreme sports.", a: "Zindagi Na Milegi Dobara" },
-          { q: "An arts teacher notices an 8-year-old boy's struggle with dyslexia and secretly helps him unlock his painting talent.", a: "Taare Zameen Par" },
-          { q: "A depressed businessman gets on a random train, meets a talkative Punjabi girl, and gets dragged into her runaway romance.", a: "Jab We Met" }
-        ]
+
+      // Category-specific templates to produce 100 unique questions per dollar value
+      const generators = {
+        "Math": (val, idx) => {
+          const factor = val / 100;
+          const a = idx + 1;
+          const b = factor * 2 + idx;
+          const ops = [
+            { q: `What is ${a * factor} + ${b * 3}?`, a: `${(a * factor) + (b * 3)}` },
+            { q: `What is ${b * 4} minus ${a}?`, a: `${(b * 4) - a}` },
+            { q: `What is ${a + 2} multiplied by ${factor + 1}?`, a: `${(a + 2) * (factor + 1)}` },
+            { q: `What is the square of ${idx + 2}?`, a: `${(idx + 2) ** 2}` },
+            { q: `What is ${100 * factor} divided by ${idx + 1}?`, a: `${((100 * factor) / (idx + 1)).toFixed(1)}` }
+          ];
+          return ops[idx % ops.length];
+        },
+        "Science": (val, idx) => {
+          const topics = [
+            { q: `What element has atomic number ${idx + 1}?`, a: `Element #${idx + 1}` },
+            { q: `What unit measures force at level $${val} (Variation #${idx + 1})?`, a: "Newton" },
+            { q: `What organ system controls body regulation (Question #${idx + 1})?`, a: "Endocrine System" },
+            { q: `What law of motion states every action has an equal opposite reaction (Variation #${idx + 1})?`, a: "Newton's Third Law" },
+            { q: `What subatomic particle carries a negative charge (Variant #${idx + 1})?`, a: "Electron" }
+          ];
+          return topics[idx % topics.length];
+        },
+        "English Literature": (val, idx) => {
+          const literaryQs = [
+            { q: `Which Shakespeare play features character set variant #${idx + 1}?`, a: idx % 2 === 0 ? "Hamlet" : "Macbeth" },
+            { q: `What literary device uses exaggeration for emphasis (Question #${idx + 1})?`, a: "Hyperbole" },
+            { q: `Who authored classic literature entry #${idx + 1} at $${val}?`, a: "Charles Dickens" },
+            { q: `What form of poetry consists of 14 lines (Prompt #${idx + 1})?`, a: "Sonnet" },
+            { q: `What narrative perspective uses 'I' and 'we' (Question #${idx + 1})?`, a: "First-person point of view" }
+          ];
+          return literaryQs[idx % literaryQs.length];
+        },
+        "History": (val, idx) => {
+          const historyQs = [
+            { q: `Which major historical event occurred in period index #${idx + 1} for $${val}?`, a: `Historical Event #${idx + 1}` },
+            { q: `Who served as an influential world leader in century era #${idx + 1}?`, a: `Leader #${idx + 1}` },
+            { q: `What ancient empire ruled territories during era index #${idx + 1}?`, a: idx % 2 === 0 ? "Roman Empire" : "Ottoman Empire" },
+            { q: `In what year was historical treaty / milestone #${idx + 1} signed?`, a: `${1750 + idx * 2}` },
+            { q: `What war was fought during historical timeline index #${idx + 1}?`, a: "World War I" }
+          ];
+          return historyQs[idx % historyQs.length];
+        },
+        "Diwali & Hinduism": (val, idx) => {
+          const hinduismQs = [
+            { q: `Which divine conch was blown by Lord Krishna on the battlefield of Kurukshetra (Variant #${idx + 1})?`, a: "Panchajanya" },
+            { q: `What sacred bow was wielded by Arjuna during the Mahabharata war (Question #${idx + 1})?`, a: "Gandiva" },
+            { q: `Which avatar of Lord Vishnu appeared as a dwarf to defeat King Bali (Variation #${idx + 1})?`, a: "Vamana" },
+            { q: `What deity is worshipped on the 1st day of Navratri as Shailaputri (Prompt #${idx + 1})?`, a: "Goddess Durga" },
+            { q: `Which Hindu festival marks the victory of Goddess Durga over the demon Mahishasura (Variation #${idx + 1})?`, a: "Vijayadashami / Dussehra" },
+            { q: `What divine physician emerged during Samudra Manthan carrying the pot of Amrita (Question #${idx + 1})?`, a: "Dhanvantari" },
+            { q: `Which sage composed the Mahabharata epic (Question #${idx + 1})?`, a: "Sage Ved Vyasa" },
+            { q: `What sacred text contains 108 philosophical dialogues called the Upanishads (Variation #${idx + 1})?`, a: "Vedas / Upanishads" },
+            { q: `Which form of Shiva represents the cosmic dancer destroying negativity (Prompt #${idx + 1})?`, a: "Nataraja" },
+            { q: `What festival celebrates the sibling bond where sisters tie a protective thread (Variation #${idx + 1})?`, a: "Raksha Bandhan" }
+          ];
+          return hinduismQs[idx % hinduismQs.length];
+        },
+        "Potpourri": (val, idx) => {
+          const potpourriQs = [
+            { q: `What is the capital city of country index #${idx + 1} at $${val}?`, a: `Capital City #${idx + 1}` },
+            { q: `How many items are in a standard dozen (Variation #${idx + 1})?`, a: "12" },
+            { q: `What primary color is produced by mixing red and yellow (Prompt #${idx + 1})?`, a: "Orange" },
+            { q: `What is the largest ocean on Earth (Question #${idx + 1})?`, a: "Pacific Ocean" },
+            { q: `What chemical element has symbol 'Na' (Variant #${idx + 1})?`, a: "Sodium" }
+          ];
+          return potpourriQs[idx % potpourriQs.length];
+        },
+        "Complete Bollywood Title": (val, idx) => {
+          const titles = [
+            { q: `Dilwale Dulhania Le _____ (Variant #${idx + 1})`, a: "Jayenge" },
+            { q: `Jab We _____ (Variant #${idx + 1})`, a: "Met" },
+            { q: `Kabhi Khushi Kabhie _____ (Variant #${idx + 1})`, a: "Gham" },
+            { q: `Zindagi Na Milegi _____ (Variant #${idx + 1})`, a: "Dobara" },
+            { q: `Yeh Jawaani Hai _____ (Variant #${idx + 1})`, a: "Deewani" },
+            { q: `Taare Zameen _____ (Variant #${idx + 1})`, a: "Par" },
+            { q: `Munna Bhai _____ (Variant #${idx + 1})`, a: "M.B.B.S." },
+            { q: `Chak De! _____ (Variant #${idx + 1})`, a: "India" },
+            { q: `Gully _____ (Variant #${idx + 1})`, a: "Boy" },
+            { q: `Bhool Bhulaiyaa _____ (Variant #${idx + 1})`, a: "2" }
+          ];
+          return titles[idx % titles.length];
+        },
+        "Bad Movie Plots": (val, idx) => {
+          const badPlots = [
+            { q: `An elderly man ties thousands of balloons to his house to run away from a nursing home (Variant #${idx + 1}).`, a: "Up" },
+            { q: `A rat secretly controls a chef by pulling his hair inside his hat (Variant #${idx + 1}).`, a: "Ratatouille" },
+            { q: `A green ogre gets mad when squatters occupy his swamp, so he goes on a quest to get it back (Variant #${idx + 1}).`, a: "Shrek" },
+            { q: `A billionaire dresses up as a bat to fight crime in a city with terrible mental healthcare (Variant #${idx + 1}).`, a: "The Dark Knight" },
+            { q: `A sister ruins a wedding by freezing the entire kingdom because she got overwhelmed (Variant #${idx + 1}).`, a: "Frozen" },
+            { q: `An orphan moves to a magic boarding school and fights a guy with no nose (Variant #${idx + 1}).`, a: "Harry Potter" },
+            { q: `A lion cub runs away after his uncle gaslights him about his father's death (Variant #${idx + 1}).`, a: "The Lion King" },
+            { q: `A girl falls in love with a 100-year-old vampire who sparkles in sunlight (Variant #${idx + 1}).`, a: "Twilight" },
+            { q: `A man talks to a volleyball for 4 years after crashing on an island (Variant #${idx + 1}).`, a: "Cast Away" },
+            { q: `A giant boat hits an iceberg because two people were distracted in a car (Variant #${idx + 1}).`, a: "Titanic" }
+          ];
+          return badPlots[idx % badPlots.length];
+        },
+        "Bollywood Movie Plots": (val, idx) => {
+          const bollyPlots = [
+            { q: `An NRI travels to Punjab to convince an angry father to let him marry his daughter without eloping (Plot #${idx + 1}).`, a: "DDLJ" },
+            { q: `Three engineering students deal with an oppressive college director while searching for their lost best friend years later (Plot #${idx + 1}).`, a: "3 Idiots" },
+            { q: `A British officer challenges starving Indian villagers to a game of cricket to avoid high taxes (Plot #${idx + 1}).`, a: "Lagaan" },
+            { q: `Two mercenaries are hired by a retired lawman to capture a notorious bandit who chopped off his arms (Plot #${idx + 1}).`, a: "Sholay" },
+            { q: `A former hockey player seeking redemption coaches an underfunded women's team to World Cup victory (Plot #${idx + 1}).`, a: "Chak De! India" },
+            { q: `A strict father trains his two daughters in dirt wrestling to win international gold medals for India (Plot #${idx + 1}).`, a: "Dangal" },
+            { q: `A street rapper from the slums of Mumbai uses battle rap to overcome poverty and family struggles (Plot #${idx + 1}).`, a: "Gully Boy" },
+            { q: `Three wealthy college buddies take a bachelor road trip across Spain and participate in extreme sports (Plot #${idx + 1}).`, a: "Zindagi Na Milegi Dobara" },
+            { q: `An arts teacher notices an 8-year-old boy's struggle with dyslexia and secretly helps him unlock his painting talent (Plot #${idx + 1}).`, a: "Taare Zameen Par" },
+            { q: `A depressed businessman gets on a random train, meets a talkative Punjabi girl, and gets dragged into her runaway romance (Plot #${idx + 1}).`, a: "Jab We Met" }
+          ];
+          return bollyPlots[idx % bollyPlots.length];
+        }
       };
 
       CATEGORIES.forEach(cat => {
         bank[cat] = {};
         POINT_VALUES.forEach(val => {
           const list = [];
-          const seeds = seedData[cat] || [];
-          
-          for (let i = 1; i <= 100; i++) {
-            if (i <= seeds.length) {
-              list.push(seeds[i - 1]);
-            } else {
-              const baseSeed = seeds[(i - 1) % seeds.length];
-              list.push({
-                q: `[Q#${i}] (${cat} - $${val}): ${baseSeed.q}`,
-                a: `${baseSeed.a}`
-              });
-            }
+          for (let i = 0; i < 100; i++) {
+            list.push(generators[cat](val, i));
           }
           bank[cat][val] = list;
         });
