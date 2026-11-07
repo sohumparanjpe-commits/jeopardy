@@ -35,7 +35,7 @@
           <h1 class="text-2xl font-black tracking-wider bg-gradient-to-r from-amber-400 via-amber-200 to-yellow-500 bg-clip-text text-transparent">
             ULTIMATE JEOPARDY
           </h1>
-          <p class="text-xs text-slate-400 font-medium">9 Categories • $100-$1000 • 100 Unique Qs per Slot • Daily Multipliers</p>
+          <p class="text-xs text-slate-400 font-medium">9 Categories • Hardcoded Difficulty Scaling ($100-$1000) • Daily Multipliers</p>
         </div>
       </div>
       <button id="reset-game-btn" class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg text-sm transition shadow-md flex items-center gap-2">
@@ -138,7 +138,7 @@
       <p class="text-xs text-slate-300">Choose an action below for this question:</p>
       <div class="flex flex-col gap-2.5">
         <button id="draw-replacement-btn" class="w-full py-2.5 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold text-xs rounded-lg transition flex items-center justify-center gap-2">
-          🔄 Draw Alternate Question (From 100-Q Pool)
+          🔄 Draw Alternate Question
         </button>
         <button id="void-tile-btn" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-lg transition border border-slate-600 flex items-center justify-center gap-2">
           🚫 Void Tile (Mark Used, No Points)
@@ -149,6 +149,9 @@
       </div>
     </div>
   </div>
+
+  <!-- LOAD HARDCODED DATA FILE -->
+  <script src="questions.js"></script>
 
   <script>
     const CATEGORIES = [
@@ -164,142 +167,6 @@
     ];
 
     const POINT_VALUES = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
-
-    // BUILD 100% UNIQUE QUESTION BANK PER DOLLAR SLOT
-    function buildQuestionBank() {
-      const bank = {};
-
-      const HINDUISM_TIER_BANKS = {
-        100: [
-          { q: "What festival is known globally as the Festival of Lights?", a: "Diwali" },
-          { q: "Which oil lamps are traditionally lit outside homes during Diwali?", a: "Diyas" },
-          { q: "Which goddess of wealth and prosperity is worshipped on Diwali night?", a: "Goddess Lakshmi" },
-          { q: "What colorful floor pattern art is created at home entrances for Diwali?", a: "Rangoli" },
-          { q: "Which elephant-headed deity is worshipped alongside Goddess Lakshmi on Diwali?", a: "Lord Ganesha" }
-        ],
-        200: [
-          { q: "Which festival celebrates the arrival of spring and victory of good over evil with colored powders?", a: "Holi" },
-          { q: "What holiday celebrates the bond between brothers and sisters with a protective thread?", a: "Raksha Bandhan" },
-          { q: "Which 9-night festival is dedicated to the worship of Goddess Durga and her avatars?", a: "Navratri" },
-          { q: "What festival marks the birth of Lord Krishna?", a: "Janmashtami" },
-          { q: "What day precedes Diwali and honors the divine physician Lord Dhanvantari?", a: "Dhanteras" }
-        ],
-        300: [
-          { q: "Who is known as the Creator in the Hindu Trinity (Trimurti)?", a: "Lord Brahma" },
-          { q: "Who is known as the Preserver and Protector in the Hindu Trinity?", a: "Lord Vishnu" },
-          { q: "Who is known as the Destroyer / Transformer in the Hindu Trinity?", a: "Lord Shiva" },
-          { q: "Which goddess is worshipped as the deity of knowledge, music, and learning?", a: "Goddess Saraswati" },
-          { q: "Which fierce goddess representing time and empowerment is associated with Lord Shiva?", a: "Goddess Kali" }
-        ],
-        400: [
-          { q: "Which avatar of Lord Vishnu emerged from a pillar as half-man, half-lion to save Prahlad?", a: "Narasimha" },
-          { q: "Which dwarf avatar of Lord Vishnu measured the three worlds in three steps to defeat King Bali?", a: "Vamana" },
-          { q: "Which wild boar avatar of Lord Vishnu lifted the Earth out of the cosmic ocean?", a: "Varaha" },
-          { q: "Which giant tortoise avatar of Lord Vishnu supported Mount Mandara during Samudra Manthan?", a: "Kurma" },
-          { q: "Which fish avatar of Lord Vishnu saved Manu and the sacred Vedas during the great deluge?", a: "Matsya" }
-        ],
-        500: [
-          { q: "Which sacred scripture contains the divine dialogue between Lord Krishna and Arjuna?", a: "Bhagavad Gita" },
-          { q: "What is the name of the great epic describing the war between Pandavas and Kauravas?", a: "Mahabharata" },
-          { q: "Where was the legendary 18-day Mahabharata war fought?", a: "Kurukshetra" },
-          { q: "Which archer prince received the teachings of the Bhagavad Gita from Lord Krishna?", a: "Arjuna" },
-          { q: "Who was the invincible warrior and son of Surya who fought for the Kauravas?", a: "Karna" }
-        ],
-        600: [
-          { q: "What sacred bow was wielded by Arjuna during the Mahabharata war?", a: "Gandiva" },
-          { q: "What divine conch was blown by Lord Krishna at the start of the Kurukshetra war?", a: "Panchajanya" },
-          { q: "What divine mace was used by Bhima in combat?", a: "Kaumodaki (or Gada)" },
-          { q: "Which grand patriarch of the Kaurava army held the boon of choosing his own time of death (Ichha Mrityu)?", a: "Bhishma" },
-          { q: "Who was the eldest of the five Pandava brothers, known for his absolute truthfulness?", a: "Yudhishthira" }
-        ],
-        700: [
-          { q: "What fundamental concept in Hinduism refers to moral duty, righteousness, and cosmic order?", a: "Dharma" },
-          { q: "What concept describes the universal law of cause and effect governing actions and rebirth?", a: "Karma" },
-          { q: "What term refers to liberation from the cycle of rebirth (Samsara)?", a: "Moksha" },
-          { q: "What is the continuous cycle of birth, death, and rebirth called in Hindu philosophy?", a: "Samsara" },
-          { q: "What pillar of life in Hindu philosophy refers to ethical pursuit of wealth and prosperity?", a: "Artha" }
-        ],
-        800: [
-          { q: "Which sage is traditionally revered as the compiler of the four Vedas and author of the Mahabharata?", a: "Sage Ved Vyasa" },
-          { q: "How many canonical Vedas form the foundational sacred scriptures of Hinduism?", a: "4 (Rig, Sama, Yajur, Atharva)" },
-          { q: "Which oldest Veda consists primarily of hymns praising natural powers and deities?", a: "Rigveda" },
-          { q: "What philosophical texts at the end of the Vedas explore the nature of Brahman and Atman?", a: "Upanishads" },
-          { q: "What sacred mantra from the Rigveda is dedicated to Savitr, the sun deity?", a: "Gayatri Mantra" }
-        ],
-        900: [
-          { q: "What form of Shiva represents the divine cosmic dancer performing the Ananda Tandava?", a: "Nataraja" },
-          { q: "Which sacred mountain peak in the Himalayas is revered as the abode of Lord Shiva?", a: "Mount Kailash" },
-          { q: "What divine weapon of Lord Shiva consists of a trident representing three powers?", a: "Trishula" },
-          { q: "Which divine bull serves as the vehicle (Vahana) and faithful companion of Lord Shiva?", a: "Nandi" },
-          { q: "What sacred night of vigil and meditation is celebrated annually in honor of Lord Shiva?", a: "Mahashivratri" }
-        ],
-        1000: [
-          { q: "What cosmic event involved gods and demons churning the ocean of milk to obtain Amrita?", a: "Samudra Manthan" },
-          { q: "What divine physician emerged from Samudra Manthan carrying the pot of immortality?", a: "Dhanvantari" },
-          { q: "What lethal poison emerged during Samudra Manthan that Lord Shiva drank to save the universe?", a: "Halahala (Kalakuta)" },
-          { q: "Which divine wish-fulfilling cow emerged during the churning of the cosmic ocean?", a: "Kamadhenu" },
-          { q: "Which 7-headed divine horse emerged during Samudra Manthan and became the vehicle of Indra?", a: "Uchchaihshravas" }
-        ]
-      };
-
-      CATEGORIES.forEach(cat => {
-        bank[cat] = {};
-        POINT_VALUES.forEach(val => {
-          const list = [];
-
-          if (cat === "Diwali & Hinduism") {
-            const baseList = HINDUISM_TIER_BANKS[val] || [];
-            for (let i = 0; i < 100; i++) {
-              if (i < baseList.length) {
-                list.push(baseList[i]);
-              } else {
-                const seed = baseList[i % baseList.length];
-                list.push({
-                  q: `[Hinduism $${val} Pool Q#${i + 1}]: ${seed.q}`,
-                  a: seed.a
-                });
-              }
-            }
-          } else {
-            // General Unique Procedural Generator for Other Categories
-            for (let i = 0; i < 100; i++) {
-              let qText = "";
-              let aText = "";
-
-              if (cat === "Math") {
-                const num1 = (val / 10) + i + 1;
-                const num2 = i + 3;
-                qText = `Math Tier $${val} (Q#${i + 1}): What is ${num1} x ${num2}?`;
-                aText = `${num1 * num2}`;
-              } else if (cat === "Science") {
-                qText = `Science Tier $${val} (Q#${i + 1}): What is the scientific concept #${(val/100)*100 + i + 1}?`;
-                aText = `Concept Answer #${i + 1}`;
-              } else if (cat === "Complete Bollywood Title") {
-                qText = `Bollywood Title Tier $${val} (Q#${i + 1}): Complete: 'Movie Title Segment #${i + 1} _____'`;
-                aText = `Completion #${i + 1}`;
-              } else if (cat === "Bad Movie Plots") {
-                qText = `Bad Movie Plot $${val} (Q#${i + 1}): A funny description of plot variant #${i + 1} for $${val}.`;
-                aText = `Movie #${i + 1}`;
-              } else if (cat === "Bollywood Movie Plots") {
-                qText = `Bollywood Plot $${val} (Q#${i + 1}): Plot summary variant #${i + 1} for Bollywood film tier $${val}.`;
-                aText = `Film #${i + 1}`;
-              } else {
-                qText = `${cat} Tier $${val} (Question #${i + 1}): Specific trivia prompt for tier $${val}.`;
-                aText = `Answer #${i + 1}`;
-              }
-
-              list.push({ q: qText, a: aText });
-            }
-          }
-
-          bank[cat][val] = list;
-        });
-      });
-
-      return bank;
-    }
-
-    const TRIVIA_BANK = buildQuestionBank();
 
     // SOUND FX SYNTH
     class SoundFX {
@@ -441,7 +308,10 @@
       const isDD = tileId === gameState.dailyDoubleTileId;
       const isDT = tileId === gameState.dailyTripleTileId;
 
-      const qList = TRIVIA_BANK[cat][val];
+      const qList = (window.EXPLICIT_BANKS && window.EXPLICIT_BANKS[cat] && window.EXPLICIT_BANKS[cat][val])
+        ? window.EXPLICIT_BANKS[cat][val]
+        : [{ q: `No question loaded for ${cat} $${val}`, a: "N/A" }];
+
       const selectedQIndex = Math.floor(Math.random() * qList.length);
       const qData = qList[selectedQIndex];
 
@@ -547,7 +417,7 @@
 
     function drawReplacementQuestion() {
       const { cat, val, qIndex } = gameState.currentTile;
-      const qList = TRIVIA_BANK[cat][val];
+      const qList = window.EXPLICIT_BANKS[cat][val];
       let newIdx = (qIndex + 1) % qList.length;
       gameState.currentTile.qIndex = newIdx;
       const newQ = qList[newIdx];
