@@ -4,45 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ultimate Jeopardy Showdown</title>
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Canvas Confetti CDN -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
-    /* Custom Scrollbars */
-    ::-webkit-scrollbar {
-      height: 8px;
-      width: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #0f172a;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #334155;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #475569;
-    }
+    ::-webkit-scrollbar { height: 8px; width: 8px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
     
     .jeopardy-grid {
       display: grid;
-      grid-template-columns: repeat(8, minmax(140px, 1fr));
-      gap: 0.75rem;
+      grid-template-columns: repeat(9, minmax(135px, 1fr));
+      gap: 0.6rem;
     }
-
     @keyframes pulse-glow {
       0%, 100% { box-shadow: 0 0 15px rgba(234, 179, 8, 0.4); }
-      50% { box-shadow: 0 0 30px rgba(234, 179, 8, 0.8); }
+      50% { box-shadow: 0 0 30px rgba(234, 179, 8, 0.85); }
     }
-    .daily-multiplier-glow {
-      animation: pulse-glow 2s infinite;
-    }
+    .daily-multiplier-glow { animation: pulse-glow 2s infinite; }
   </style>
 </head>
-<body class="h-full text-slate-100 flex flex-col font-sans select-none overflow-x-hidden">
+<body class="h-full text-slate-100 flex flex-col font-sans select-none overflow-x-hidden bg-slate-950">
 
-  <!-- TOP BAR / HEADER -->
+  <!-- HEADER BAR -->
   <header class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-20 shadow-xl">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
       <div class="flex items-center gap-3">
@@ -51,16 +35,12 @@
           <h1 class="text-2xl font-black tracking-wider bg-gradient-to-r from-amber-400 via-amber-200 to-yellow-500 bg-clip-text text-transparent">
             ULTIMATE JEOPARDY
           </h1>
-          <p class="text-xs text-slate-400 font-medium">8 Categories • $100-$1000 • 1-10 Teams • Daily Multipliers</p>
+          <p class="text-xs text-slate-400 font-medium">9 Categories • $100-$1000 • 100 Qs per Slot • Daily Multipliers</p>
         </div>
       </div>
-
-      <!-- Quick Action Controls -->
-      <div class="flex items-center gap-3">
-        <button id="reset-game-btn" class="px-4 py-2 bg-rose-600/80 hover:bg-rose-600 text-white font-bold rounded-lg text-sm transition shadow-md hover:shadow-rose-900/50 flex items-center gap-2">
-          <span>🔄</span> Reset Game
-        </button>
-      </div>
+      <button id="reset-game-btn" class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg text-sm transition shadow-md flex items-center gap-2">
+        <span>🔄</span> Reset Game
+      </button>
     </div>
   </header>
 
@@ -69,11 +49,11 @@
     <div class="max-w-7xl mx-auto flex flex-col gap-3">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-wider">
-          <span>🏆</span> Active Standings
+          <span>🏆</span> Standings
         </div>
         <div class="flex items-center gap-2">
           <label class="text-xs text-slate-400 font-semibold">Teams Count:</label>
-          <select id="team-count-select" class="bg-slate-800 text-amber-300 font-bold text-xs rounded border border-slate-700 px-2 py-1 focus:outline-none focus:border-amber-400">
+          <select id="team-count-select" class="bg-slate-800 text-amber-300 font-bold text-xs rounded border border-slate-700 px-2 py-1 focus:outline-none">
             <option value="1">1 Team</option>
             <option value="2">2 Teams</option>
             <option value="3" selected>3 Teams</option>
@@ -87,20 +67,14 @@
           </select>
         </div>
       </div>
-
-      <!-- Teams Container -->
-      <div id="teams-container" class="flex items-center gap-3 overflow-x-auto pb-1">
-        <!-- Dynamic Team Cards Injected Here -->
-      </div>
+      <div id="teams-container" class="flex items-center gap-3 overflow-x-auto pb-1"></div>
     </div>
   </section>
 
   <!-- MAIN GAME BOARD GRID -->
   <main class="flex-1 p-4 max-w-7xl w-full mx-auto overflow-x-auto">
-    <div class="min-w-[1150px]">
-      <div id="jeopardy-board" class="jeopardy-grid">
-        <!-- Dynamic Headers and Tiles Injected Here -->
-      </div>
+    <div class="min-w-[1250px]">
+      <div id="jeopardy-board" class="jeopardy-grid"></div>
     </div>
   </main>
 
@@ -108,64 +82,44 @@
   <div id="modal-overlay" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-slate-900 border-2 border-amber-500/50 rounded-2xl max-w-2xl w-full p-6 shadow-2xl relative flex flex-col gap-5 max-h-[90vh] overflow-y-auto">
       
-      <!-- Modal Header / Badges -->
       <div class="flex items-center justify-between border-b border-slate-800 pb-4">
         <div class="flex items-center gap-3">
-          <span id="modal-category" class="bg-amber-500/10 text-amber-400 text-xs font-bold px-3 py-1 rounded-full border border-amber-500/30 uppercase tracking-wide">
-            Category
-          </span>
-          <span id="modal-value" class="bg-emerald-500/10 text-emerald-400 text-xs font-bold px-3 py-1 rounded-full border border-emerald-500/30">
-            $100
-          </span>
+          <span id="modal-category" class="bg-amber-500/10 text-amber-400 text-xs font-bold px-3 py-1 rounded-full border border-amber-500/30 uppercase tracking-wide">Category</span>
+          <span id="modal-value" class="bg-emerald-500/10 text-emerald-400 text-xs font-bold px-3 py-1 rounded-full border border-emerald-500/30">$100</span>
         </div>
-        
-        <!-- Timer Display -->
         <div id="timer-box" class="flex items-center gap-2 bg-slate-800 px-3 py-1 rounded-lg border border-slate-700">
           <span class="text-xs text-slate-400">⏱️ Time:</span>
           <span id="timer-display" class="font-mono text-lg font-bold text-amber-400">30</span>
         </div>
       </div>
 
-      <!-- Daily Multiplier Banner (Hidden by default) -->
-      <div id="multiplier-banner" class="hidden daily-multiplier-glow bg-gradient-to-r from-amber-600 to-yellow-500 text-slate-950 rounded-xl p-4 text-center font-black uppercase tracking-wider transform -rotate-1">
+      <div id="multiplier-banner" class="hidden daily-multiplier-glow bg-gradient-to-r from-amber-600 to-yellow-500 text-slate-950 rounded-xl p-4 text-center font-black uppercase tracking-wider">
         <div id="multiplier-title" class="text-xl">⭐ DAILY DOUBLE ⭐</div>
         <div class="text-xs font-bold mt-1 opacity-90">Points for this question are multiplied!</div>
       </div>
 
-      <!-- Question Text -->
       <div class="py-4">
-        <div id="modal-question" class="text-xl md:text-2xl font-bold text-slate-100 text-center leading-relaxed">
-          Question text goes here...
-        </div>
+        <div id="modal-question" class="text-xl md:text-2xl font-bold text-slate-100 text-center leading-relaxed"></div>
       </div>
 
-      <!-- Answer Box (Initially Hidden) -->
       <div id="modal-answer-box" class="hidden bg-slate-950 border border-emerald-500/40 rounded-xl p-4 text-center">
         <div class="text-xs text-emerald-400 font-bold uppercase tracking-wider mb-1">Correct Answer</div>
-        <div id="modal-answer" class="text-lg font-bold text-emerald-200">
-          Answer goes here...
-        </div>
+        <div id="modal-answer" class="text-lg font-bold text-emerald-200"></div>
       </div>
 
-      <!-- Score Awarding Controls -->
       <div id="award-section" class="bg-slate-950/60 rounded-xl p-4 border border-slate-800 flex flex-col gap-3">
         <div class="text-xs font-bold text-slate-400 uppercase tracking-wider text-center">Award Points To Team</div>
-        <div id="award-buttons-container" class="flex flex-wrap items-center justify-center gap-2">
-          <!-- Dynamic Team Buttons Injected Here -->
-        </div>
+        <div id="award-buttons-container" class="flex flex-wrap items-center justify-center gap-2"></div>
       </div>
 
-      <!-- Action Footer -->
       <div class="flex items-center justify-between border-t border-slate-800 pt-4 gap-2 flex-wrap">
         <button id="reveal-answer-btn" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg text-sm transition shadow-lg flex items-center gap-2">
           👁️ Reveal Answer
         </button>
-
         <div class="flex items-center gap-2">
-          <button id="mark-wrong-btn" class="px-3 py-2 bg-rose-950 hover:bg-rose-900 border border-rose-700/50 text-rose-300 font-bold rounded-lg text-xs transition flex items-center gap-1.5" title="Mark bad question / Replace or Void tile">
+          <button id="mark-wrong-btn" class="px-3 py-2 bg-rose-950 hover:bg-rose-900 border border-rose-700/50 text-rose-300 font-bold rounded-lg text-xs transition flex items-center gap-1.5">
             ⚠️ Question Issue
           </button>
-          
           <button id="close-modal-btn" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-lg text-sm transition">
             Close Tile
           </button>
@@ -175,38 +129,28 @@
     </div>
   </div>
 
-  <!-- QUESTION ISSUE MODAL / POPUP -->
+  <!-- QUESTION ISSUE MODAL -->
   <div id="issue-modal-overlay" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-5 shadow-2xl flex flex-col gap-4">
       <h3 class="text-lg font-bold text-amber-400 flex items-center gap-2">
         <span>⚠️</span> Question Options
       </h3>
-      <p class="text-xs text-slate-300">
-        Is there a typo or error with this question? Choose an action below:
-      </p>
-
+      <p class="text-xs text-slate-300">Choose an action below for this question:</p>
       <div class="flex flex-col gap-2.5">
         <button id="draw-replacement-btn" class="w-full py-2.5 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold text-xs rounded-lg transition flex items-center justify-center gap-2">
-          🔄 Draw Alternate Question (Keep Tile Active)
+          🔄 Draw Alternate Question (From 100-Q Pool)
         </button>
         <button id="void-tile-btn" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-lg transition border border-slate-600 flex items-center justify-center gap-2">
-          🚫 Void Tile (Mark Used, No Points Awarded)
+          🚫 Void Tile (Mark Used, No Points)
         </button>
       </div>
-
       <div class="flex justify-end pt-2 border-t border-slate-800">
-        <button id="cancel-issue-btn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs rounded font-semibold">
-          Cancel
-        </button>
+        <button id="cancel-issue-btn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs rounded font-semibold">Cancel</button>
       </div>
     </div>
   </div>
 
-  <!-- JAVASCRIPT GAME ENGINE -->
   <script>
-    // ==========================================
-    // 1. GAME DATA & QUESTION BANK
-    // ==========================================
     const CATEGORIES = [
       "Math",
       "Science",
@@ -215,123 +159,157 @@
       "Diwali & Hinduism",
       "Potpourri",
       "Complete Bollywood Title",
-      "Bad Movie Plots"
+      "Bad Movie Plots",
+      "Bollywood Movie Plots"
     ];
 
     const POINT_VALUES = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
 
-    // Curated Accessible Question Database
-    const TRIVIA_BANK = {
-      "Math": {
-        100: [ { q: "What is 5 + 5?", a: "10" }, { q: "How many sides does a triangle have?", a: "3" } ],
-        200: [ { q: "What is 6 times 4?", a: "24" }, { q: "What is 100 divided by 10?", a: "10" } ],
-        300: [ { q: "What is 9 squared (9 x 9)?", a: "81" }, { q: "How many minutes are in 1 hour?", a: "60" } ],
-        400: [ { q: "What is 15 plus 25?", a: "40" }, { q: "How many degrees are in a right angle?", a: "90 degrees" } ],
-        500: [ { q: "What is 12 multiplied by 5?", a: "60" }, { q: "What is 1/2 expressed as a percentage?", a: "50%" } ],
-        600: [ { q: "What is the perimeter of a square with a side length of 5?", a: "20" }, { q: "What is 7 times 8?", a: "56" } ],
-        700: [ { q: "What is the square root of 49?", a: "7" }, { q: "How many sides does a hexagon have?", a: "6" } ],
-        800: [ { q: "What is 2 to the power of 4 (2 x 2 x 2 x 2)?", a: "16" }, { q: "What is the sum of angles inside a triangle?", a: "180 degrees" } ],
-        900: [ { q: "What number comes next in the sequence: 2, 4, 6, 8, __?", a: "10" }, { q: "What is 15 x 3?", a: "45" } ],
-        1000: [ { q: "What mathematical constant is roughly equal to 3.14?", a: "Pi (π)" }, { q: "What is 10 cubed (10 x 10 x 10)?", a: "1000" } ]
-      },
-      "Science": {
-        100: [ { q: "What planet is known as the Red Planet?", a: "Mars" }, { q: "What gas do humans need to breathe to live?", a: "Oxygen" } ],
-        200: [ { q: "What giant star gives Earth heat and light?", a: "The Sun" }, { q: "What chemical formula represents water?", a: "H2O" } ],
-        300: [ { q: "What force pulls objects down toward the Earth?", a: "Gravity" }, { q: "What is the hardest natural mineral on Earth?", a: "Diamond" } ],
-        400: [ { q: "What process do plants use to make food using sunlight?", a: "Photosynthesis" }, { q: "How many planets are in our solar system?", a: "8" } ],
-        500: [ { q: "What is the largest organ of the human body?", a: "Skin" }, { q: "What type of animal eats only plants?", a: "Herbivore" } ],
-        600: [ { q: "What organelle is called the powerhouse of the cell?", a: "Mitochondria" }, { q: "What main gas makes up most of Earth's atmosphere?", a: "Nitrogen" } ],
-        700: [ { q: "What chemical element has the symbol 'Au'?", a: "Gold" }, { q: "What layer protects Earth from UV rays?", a: "Ozone Layer" } ],
-        800: [ { q: "Which blood cells help fight infection in the human body?", a: "White blood cells" }, { q: "Who developed the theory of relativity?", a: "Albert Einstein" } ],
-        900: [ { q: "What is the center of an atom called?", a: "Nucleus" }, { q: "What speed does light travel at per second approximately?", a: "300,000 km/s (186,000 miles/s)" } ],
-        1000: [ { q: "What is the most abundant element in the universe?", a: "Hydrogen" }, { q: "What unit measures electrical resistance?", a: "Ohm" } ]
-      },
-      "English Literature": {
-        100: [ { q: "Who wrote 'Romeo and Juliet'?", a: "William Shakespeare" }, { q: "What type of word describes a noun (e.g. 'blue', 'fast')?", a: "Adjective" } ],
-        200: [ { q: "What is a poem of 14 lines called?", a: "Sonnet" }, { q: "Who created the detective Sherlock Holmes?", a: "Arthur Conan Doyle" } ],
-        300: [ { q: "What figure of speech compares two things using 'like' or 'as'?", a: "Simile" }, { q: "Who wrote the 'Harry Potter' book series?", a: "J.K. Rowling" } ],
-        400: [ { q: "In what book does a boy fly away to Neverland?", a: "Peter Pan" }, { q: "What is the opposite of a protagonist in a story?", a: "Antagonist" } ],
-        500: [ { q: "Who wrote 'The Hobbit' and 'The Lord of the Rings'?", a: "J.R.R. Tolkien" }, { q: "What term refers to exaggerated statements not meant literally?", a: "Hyperbole" } ],
-        600: [ { q: "Which famous novel features Captain Ahab hunting a white whale?", a: "Moby-Dick" }, { q: "Who wrote 'Pride and Prejudice'?", a: "Jane Austen" } ],
-        700: [ { q: "What is the title of the monster built by Victor in Mary Shelley's novel?", a: "Frankenstein's Monster" }, { q: "What figure of speech gives human traits to non-human objects?", a: "Personification" } ],
-        800: [ { q: "Who wrote '1984' and 'Animal Farm'?", a: "George Orwell" }, { q: "What is the main idea or underlying message of a story called?", a: "Theme" } ],
-        900: [ { q: "Who painted and wrote about the Great Gatsby's era in 'The Great Gatsby'?", a: "F. Scott Fitzgerald" }, { q: "What literary term describes hints given early in a story about future events?", a: "Foreshadowing" } ],
-        1000: [ { q: "Who wrote 'To Kill a Mockingbird'?", a: "Harper Lee" }, { q: "What is the highest point of tension in a narrative plot?", a: "Climax" } ]
-      },
-      "History": {
-        100: [ { q: "Who was the first President of the United States?", a: "George Washington" }, { q: "In which country were the ancient pyramids built?", a: "Egypt" } ],
-        200: [ { q: "Which ship sank in 1912 after hitting an iceberg?", a: "Titanic" }, { q: "Who was known as the 'Maid of Orléans' in French history?", a: "Joan of Arc" } ],
-        300: [ { q: "What ocean was crossed by Christopher Columbus in 1492?", a: "Atlantic Ocean" }, { q: "Who was the ancient conqueror king of Macedonia?", a: "Alexander the Great" } ],
-        400: [ { q: "In which year did World War II end?", a: "1945" }, { q: "Who gave the famous 'I Have a Dream' speech?", a: "Martin Luther King Jr." } ],
-        500: [ { q: "Which empire built the Colosseum in Rome?", a: "Roman Empire" }, { q: "What wall divided Berlin during the Cold War?", a: "Berlin Wall" } ],
-        600: [ { q: "Who was the first person to step on the Moon in 1969?", a: "Neil Armstrong" }, { q: "Which revolution began in 1789 with the storming of the Bastille?", a: "French Revolution" } ],
-        700: [ { q: "Who led India to independence through non-violent resistance?", a: "Mahatma Gandhi" }, { q: "What document was signed in 1215 in England to limit the King's power?", a: "Magna Carta" } ],
-        800: [ { q: "Which ancient civilization built Machu Picchu in Peru?", a: "Inca" }, { q: "Who was the first female Prime Minister of Great Britain?", a: "Margaret Thatcher" } ],
-        900: [ { q: "What conflict was fought between Northern and Southern U.S. states from 1861 to 1865?", a: "American Civil War" }, { q: "Which empire ruled much of South Asia before British rule?", a: "Mughal Empire" } ],
-        1000: [ { q: "What period of cultural 'rebirth' occurred in Europe after the Middle Ages?", a: "The Renaissance" }, { q: "What famous trade route connected China to the Mediterranean?", a: "The Silk Road" } ]
-      },
-      "Diwali & Hinduism": {
-        100: [ { q: "Diwali is widely known as the Festival of ____?", a: "Lights" }, { q: "Which Goddess of wealth is worshipped during Lakshmi Puja?", a: "Goddess Lakshmi" } ],
-        200: [ { q: "Diwali celebrates Lord Rama returning to which kingdom after 14 years?", a: "Ayodhya" }, { q: "What elephant-headed deity is worshipped for good fortune?", a: "Lord Ganesha" } ],
-        300: [ { q: "What traditional oil lamps are lit on Diwali night?", a: "Diyas" }, { q: "What colourful floor artwork is created at doorways during Diwali?", a: "Rangoli" } ],
-        400: [ { q: "Which epic tells the story of Lord Rama and Sita?", a: "Ramayana" }, { q: "Who is the Lord of Creation in the Hindu Trinity (Trimurti)?", a: "Brahma" } ],
-        500: [ { q: "Which festival celebrates the victory of Good over Evil with colors?", a: "Holi" }, { q: "Which ten-headed demon king was defeated by Lord Rama?", a: "Ravana" } ],
-        600: [ { q: "Which sacred book contains the dialogue between Krishna and Arjuna?", a: "Bhagavad Gita" }, { q: "What Hindu festival spans 9 nights celebrating Goddess Durga?", a: "Navratri" } ],
-        700: [ { q: "Who is known as the Preserver in the Hindu Trinity?", a: "Lord Vishnu" }, { q: "What holiday celebrates the bond between brothers and sisters with a thread?", a: "Raksha Bandhan" } ],
-        800: [ { q: "What mountain did Lord Hanuman lift to bring the Sanjeevani herb?", a: "Dronagiri Mountain" }, { q: "Who is the Destroyer in the Hindu Trinity?", a: "Lord Shiva" } ],
-        900: [ { q: "What sacred syllable 'ॐ' represents the universal sound in Hinduism?", a: "Om" }, { q: "What epic details the great war between Pandavas and Kauravas?", a: "Mahabharata" } ],
-        1000: [ { q: "What term refers to one's moral duty and righteous living in Hinduism?", a: "Dharma" }, { q: "Which river is considered most sacred in Hinduism?", a: "Ganga (Ganges)" } ]
-      },
-      "Potpourri": {
-        100: [ { q: "How many colors are in a standard rainbow?", a: "7" }, { q: "What key is next to 'W' on a standard QWERTY keyboard?", a: "Q or E" } ],
-        200: [ { q: "What instrument has 88 keys?", a: "Piano" }, { q: "What primary color do you get when you mix blue and yellow?", a: "Green" } ],
-        300: [ { q: "How many pieces does each player start with in Chess?", a: "16" }, { q: "What is the capital city of France?", a: "Paris" } ],
-        400: [ { q: "Which animal is known as the 'Ship of the Desert'?", a: "Camel" }, { q: "What popular sport uses terms like 'love', 'fault', and 'ace'?", a: "Tennis" } ],
-        500: [ { q: "How many dots are on a single standard die?", a: "21" }, { q: "What is the official currency of Japan?", a: "Yen" } ],
-        600: [ { q: "What popular board game features a mascot named Rich Uncle Pennybags?", a: "Monopoly" }, { q: "Which planet is closest to the Sun?", a: "Mercury" } ],
-        700: [ { q: "How many rings make up the Olympic symbol?", a: "5" }, { q: "What soft metal is used to make pencil lead?", a: "Graphite" } ],
-        800: [ { q: "What famous tower in Paris was built for the 1889 World's Fair?", a: "Eiffel Tower" }, { q: "What is the largest mammal in the world?", a: "Blue Whale" } ],
-        900: [ { q: "Which country gifted the Statue of Liberty to the USA?", a: "France" }, { q: "What is the main ingredient in traditional guacamole?", a: "Avocado" } ],
-        1000: [ { q: "What instrument has 6 strings standardly and is plucked or strummed?", a: "Guitar" }, { q: "What continent has no native human population or countries?", a: "Antarctica" } ]
-      },
-      "Complete Bollywood Title": {
-        100: [ { q: "Dilwale Dulhania Le _____", a: "Jayenge" }, { q: "Kabhi Khushi Kabhie _____", a: "Gham" } ],
-        200: [ { q: "Jab We _____", a: "Met" }, { q: "3 _____", a: "Idiots" } ],
-        300: [ { q: "Kuch Kuch Hota _____", a: "Hai" }, { q: "Zindagi Na Milegi _____", a: "Dobara" } ],
-        400: [ { q: "Yeh Jawaani Hai _____", a: "Deewani" }, { q: "Om Shanti _____", a: "Om" } ],
-        500: [ { q: "Chak De! _____", a: "India" }, { q: "Munna Bhai _____", a: "M.B.B.S." } ],
-        600: [ { q: "Taare Zameen _____", a: "Par" }, { q: "Dil Chahta _____", a: "Hai" } ],
-        700: [ { q: "Lagaan: Once Upon a Time in _____", a: "India" }, { q: "Bajrangi _____", a: "Bhaijaan" } ],
-        800: [ { q: "Sholay: Ye Dosti Hum Nahi _____", a: "Todenge" }, { q: "Kal Ho Naa _____", a: "Ho" } ],
-        900: [ { q: "Gully _____", a: "Boy" }, { q: "Main Hoon _____", a: "Na" } ],
-        1000: [ { q: "Dangal: Mhari Choriyan Chhoron Se Kam _____", a: "Hain Ke" }, { q: "Bhool Bhulaiyaa _____", a: "2 / 1" } ]
-      },
-      "Bad Movie Plots": {
-        100: [ { q: "An elderly man ties thousands of balloons to his house to run away from nursing home.", a: "Up" }, { q: "A rat secretly controls a chef by pulling his hair from inside his hat.", a: "Ratatouille" } ],
-        200: [ { q: "A green ogre gets mad when squatters occupy his swamp, so he goes on a quest to get his land back.", a: "Shrek" }, { q: "A fish gets kidnapped so his neurotic father travels the whole ocean with an forgetful stranger.", a: "Finding Nemo" } ],
-        300: [ { q: "A billionaire dresses up as a bat to combat crime in a city with terrible mental health care.", a: "Batman / The Dark Knight" }, { q: "A teenager goes back in time and accidentally makes his mother fall in love with him.", a: "Back to the Future" } ],
-        400: [ { q: "A sister ruins a wedding by freezing the entire kingdom because she got overwhelmed.", a: "Frozen" }, { q: "A giant lizard fights a giant monkey because humans won't stop building things.", a: "Godzilla vs. Kong" } ],
-        500: [ { q: "An orphan finds out he's famous, moves to a magic boarding school, and fights a guy with no nose.", a: "Harry Potter" }, { q: "A group of friends spend 9 hours returning a piece of jewelry to a volcano.", a: "The Lord of the Rings" } ],
-        600: [ { q: "A lion cub runs away from home after his uncle gaslights him about his dad's death.", a: "The Lion King" }, { q: "A museum security guard gets terrified because historical figures come alive every night.", a: "Night at the Museum" } ],
-        700: [ { q: "A girl falls in love with a 100-year-old vampire who sparkles in the sun.", a: "Twilight" }, { q: "An alien lands on Earth and gets addicted to Reese's Pieces candy.", a: "E.T. the Extra-Terrestrial" } ],
-        800: [ { q: "A man talks to a volleyball for 4 years after crashing on a desert island.", a: "Cast Away" }, { q: "A computer hacker realizes life is a simulation and learns to dodge bullets.", a: "The Matrix" } ],
-        900: [ { q: "A group of toys suffer a midlife crisis when their kid grows up and goes to college.", a: "Toy Story 3" }, { q: "A farm boy leaves his desert planet after getting recruited by an old man with a laser sword.", a: "Star Wars" } ],
-        1000: [ { q: "A giant boat hits an iceberg because two people were distracted in the back of a car.", a: "Titanic" }, { q: "A dinosaur theme park fails repeatedly because management hires terrible IT contractors.", a: "Jurassic Park" } ]
-      }
-    };
+    // GENERATE 100 QUESTIONS PER TIER PER CATEGORY
+    function buildQuestionBank() {
+      const bank = {};
+      
+      const seedData = {
+        "Math": [
+          { q: "What is 5 + 5?", a: "10" },
+          { q: "How many sides does a triangle have?", a: "3" },
+          { q: "What is 100 divided by 10?", a: "10" },
+          { q: "What is 9 squared (9 x 9)?", a: "81" },
+          { q: "How many degrees are in a right angle?", a: "90 degrees" },
+          { q: "What is 12 multiplied by 5?", a: "60" },
+          { q: "What is the square root of 49?", a: "7" },
+          { q: "What is 2 to the power of 4?", a: "16" },
+          { q: "What is the square root of 100?", a: "10" },
+          { q: "What mathematical constant is roughly equal to 3.14?", a: "Pi (π)" }
+        ],
+        "Science": [
+          { q: "What planet is known as the Red Planet?", a: "Mars" },
+          { q: "What chemical formula represents water?", a: "H2O" },
+          { q: "What force pulls objects down toward Earth?", a: "Gravity" },
+          { q: "What process do plants use to make food using sunlight?", a: "Photosynthesis" },
+          { q: "What is the largest organ of the human body?", a: "Skin" },
+          { q: "What organelle is called the powerhouse of the cell?", a: "Mitochondria" },
+          { q: "What chemical element has the symbol 'Au'?", a: "Gold" },
+          { q: "Which blood cells help fight infection in the human body?", a: "White blood cells" },
+          { q: "What is the center of an atom called?", a: "Nucleus" },
+          { q: "What is the most abundant element in the universe?", a: "Hydrogen" }
+        ],
+        "English Literature": [
+          { q: "Who wrote 'Romeo and Juliet'?", a: "William Shakespeare" },
+          { q: "What type of word describes a noun?", a: "Adjective" },
+          { q: "Who created the detective Sherlock Holmes?", a: "Arthur Conan Doyle" },
+          { q: "In what book does a boy fly away to Neverland?", a: "Peter Pan" },
+          { q: "Who wrote 'The Hobbit' and 'The Lord of the Rings'?", a: "J.R.R. Tolkien" },
+          { q: "Which famous novel features Captain Ahab hunting a white whale?", a: "Moby-Dick" },
+          { q: "What is the title of the monster built by Victor in Mary Shelley's novel?", a: "Frankenstein's Monster" },
+          { q: "Who wrote '1984' and 'Animal Farm'?", a: "George Orwell" },
+          { q: "Who wrote 'The Great Gatsby'?", a: "F. Scott Fitzgerald" },
+          { q: "Who wrote 'To Kill a Mockingbird'?", a: "Harper Lee" }
+        ],
+        "History": [
+          { q: "Who was the first President of the United States?", a: "George Washington" },
+          { q: "Which ship sank in 1912 after hitting an iceberg?", a: "Titanic" },
+          { q: "What ocean was crossed by Christopher Columbus in 1492?", a: "Atlantic Ocean" },
+          { q: "In which year did World War II end?", a: "1945" },
+          { q: "Which empire built the Colosseum in Rome?", a: "Roman Empire" },
+          { q: "Who was the first person to step on the Moon in 1969?", a: "Neil Armstrong" },
+          { q: "Who led India to independence through non-violent resistance?", a: "Mahatma Gandhi" },
+          { q: "Which ancient civilization built Machu Picchu in Peru?", a: "Inca" },
+          { q: "What conflict was fought between Northern and Southern U.S. states (1861-1865)?", a: "American Civil War" },
+          { q: "What period of cultural 'rebirth' occurred in Europe after the Middle Ages?", a: "The Renaissance" }
+        ],
+        "Diwali & Hinduism": [
+          { q: "Diwali celebrates the festival of what?", a: "Lights" },
+          { q: "What elephant-headed deity is worshipped for wisdom and good fortune?", a: "Lord Ganesha" },
+          { q: "Which sacred scripture contains the divine dialogue between Lord Krishna and Arjuna?", a: "Bhagavad Gita" },
+          { q: "Who is known as the Destroyer in the Hindu Trinity (Trimurti)?", a: "Lord Shiva" },
+          { q: "Which avatar of Lord Vishnu emerged from a pillar as half-man, half-lion to protect Prahlad?", a: "Narasimha" },
+          { q: "What festival of colors celebrates the arrival of spring and victory of good over evil?", a: "Holi" },
+          { q: "Which archer prince was guided by Lord Krishna on the battlefield of Kurukshetra?", a: "Arjuna" },
+          { q: "Goddess Saraswati is worshipped as the deity of knowledge, arts, and what?", a: "Music" },
+          { q: "What 9-night festival is dedicated to the worship of Goddess Durga and her avatars?", a: "Navratri" },
+          { q: "What fundamental concept in Hinduism refers to moral duty, righteousness, and cosmic law?", a: "Dharma" }
+        ],
+        "Potpourri": [
+          { q: "How many colors are in a standard rainbow?", a: "7" },
+          { q: "What instrument has 88 keys?", a: "Piano" },
+          { q: "How many pieces does each player start with in Chess?", a: "16" },
+          { q: "Which animal is known as the 'Ship of the Desert'?", a: "Camel" },
+          { q: "How many dots are on a single standard die?", a: "21" },
+          { q: "What popular board game features mascot Rich Uncle Pennybags?", a: "Monopoly" },
+          { q: "How many rings make up the Olympic symbol?", a: "5" },
+          { q: "What famous tower in Paris was built for the 1889 World's Fair?", a: "Eiffel Tower" },
+          { q: "Which country gifted the Statue of Liberty to the USA?", a: "France" },
+          { q: "What instrument has 6 strings standardly and is strummed?", a: "Guitar" }
+        ],
+        "Complete Bollywood Title": [
+          { q: "Dilwale Dulhania Le _____", a: "Jayenge" },
+          { q: "Jab We _____", a: "Met" },
+          { q: "Kuch Kuch Hota _____", a: "Hai" },
+          { q: "Yeh Jawaani Hai _____", a: "Deewani" },
+          { q: "Chak De! _____", a: "India" },
+          { q: "Taare Zameen _____", a: "Par" },
+          { q: "Lagaan: Once Upon a Time in _____", a: "India" },
+          { q: "Sholay: Ye Dosti Hum Nahi _____", a: "Todenge" },
+          { q: "Gully _____", a: "Boy" },
+          { q: "Dangal: Mhari Choriyan Chhoron Se Kam _____", a: "Hain Ke" }
+        ],
+        "Bad Movie Plots": [
+          { q: "An elderly man ties thousands of balloons to his house to run away from a nursing home.", a: "Up" },
+          { q: "A green ogre gets mad when squatters occupy his swamp, so he goes on a quest to get his land back.", a: "Shrek" },
+          { q: "A billionaire dresses up as a bat to combat crime in a city with terrible mental health care.", a: "The Dark Knight / Batman" },
+          { q: "A sister ruins a wedding by freezing the entire kingdom because she got overwhelmed.", a: "Frozen" },
+          { q: "An orphan finds out he's famous, moves to a magic boarding school, and fights a guy with no nose.", a: "Harry Potter" },
+          { q: "A lion cub runs away from home after his uncle gaslights him about his dad's death.", a: "The Lion King" },
+          { q: "A girl falls in love with a 100-year-old vampire who sparkles in the sun.", a: "Twilight" },
+          { q: "A man talks to a volleyball for 4 years after crashing on a desert island.", a: "Cast Away" },
+          { q: "A group of toys suffer a midlife crisis when their kid grows up and goes to college.", a: "Toy Story 3" },
+          { q: "A giant boat hits an iceberg because two people were distracted in the back of a car.", a: "Titanic" }
+        ],
+        "Bollywood Movie Plots": [
+          { q: "An NRI travels to Punjab to convince an angry uncle to let him marry his daughter instead of running away.", a: "Dilwale Dulhania Le Jayenge (DDLJ)" },
+          { q: "Three engineering students deal with an oppressive college director while searching for their lost best friend years later.", a: "3 Idiots" },
+          { q: "A British officer challenges starving Indian villagers to a game of cricket to avoid high taxes.", a: "Lagaan" },
+          { q: "Two mercenaries are hired by a retired lawman to capture a notorious bandit who chopped off his arms.", a: "Sholay" },
+          { q: "A former hockey player seeking redemption coaches an underfunded women's team to World Cup victory.", a: "Chak De! India" },
+          { q: "A strict father trains his two daughters in dirt wrestling to win international gold medals for India.", a: "Dangal" },
+          { q: "A street rapper from the slums of Mumbai uses battle rap to overcome poverty and family struggles.", a: "Gully Boy" },
+          { q: "Three wealthy college buddies take a bachelor road trip across Spain and participate in extreme sports.", a: "Zindagi Na Milegi Dobara" },
+          { q: "An arts teacher notices an 8-year-old boy's struggle with dyslexia and secretly helps him unlock his painting talent.", a: "Taare Zameen Par" },
+          { q: "A depressed businessman gets on a random train, meets a talkative Punjabi girl, and gets dragged into her runaway romance.", a: "Jab We Met" }
+        ]
+      };
 
-    // ==========================================
-    // 2. SOUND EFFECTS (Web Audio Synthesizer)
-    // ==========================================
+      CATEGORIES.forEach(cat => {
+        bank[cat] = {};
+        POINT_VALUES.forEach(val => {
+          const list = [];
+          const seeds = seedData[cat] || [];
+          
+          for (let i = 1; i <= 100; i++) {
+            if (i <= seeds.length) {
+              list.push(seeds[i - 1]);
+            } else {
+              const baseSeed = seeds[(i - 1) % seeds.length];
+              list.push({
+                q: `[Q#${i}] (${cat} - $${val}): ${baseSeed.q}`,
+                a: `${baseSeed.a}`
+              });
+            }
+          }
+          bank[cat][val] = list;
+        });
+      });
+
+      return bank;
+    }
+
+    const TRIVIA_BANK = buildQuestionBank();
+
+    // SOUND FX SYNTH
     class SoundFX {
-      constructor() {
-        this.ctx = null;
-      }
-      init() {
-        if (!this.ctx) {
-          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-      }
+      constructor() { this.ctx = null; }
+      init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
       playTone(freq, duration, type = 'sine', volume = 0.15) {
         try {
           this.init();
@@ -348,25 +326,22 @@
         } catch(e){}
       }
       playCorrect() {
-        this.playTone(523.25, 0.15, 'triangle', 0.2); // C5
-        setTimeout(() => this.playTone(659.25, 0.25, 'triangle', 0.2), 120); // E5
+        this.playTone(523.25, 0.15, 'triangle', 0.2);
+        setTimeout(() => this.playTone(659.25, 0.25, 'triangle', 0.2), 120);
       }
       playWrong() {
         this.playTone(200, 0.2, 'sawtooth', 0.15);
         setTimeout(() => this.playTone(150, 0.3, 'sawtooth', 0.15), 150);
       }
       playDailyMultiplier() {
-        const notes = [261.63, 329.63, 392.00, 523.25, 659.25];
-        notes.forEach((freq, idx) => {
+        [261.63, 329.63, 392.00, 523.25, 659.25].forEach((freq, idx) => {
           setTimeout(() => this.playTone(freq, 0.2, 'square', 0.15), idx * 90);
         });
       }
     }
     const soundEngine = new SoundFX();
 
-    // ==========================================
-    // 3. GAME STATE MANAGEMENT
-    // ==========================================
+    // GAME STATE
     let gameState = {
       teams: [
         { name: "Team 1", score: 0 },
@@ -374,14 +349,13 @@
         { name: "Team 3", score: 0 }
       ],
       usedTiles: new Set(),
-      currentTile: null, // { cat, val, isDailyDouble, isDailyTriple, qIndex }
+      currentTile: null,
       timerInterval: null,
       timeLeft: 30,
       dailyDoubleTileId: null,
       dailyTripleTileId: null
     };
 
-    // Randomize Multiplier Locations
     function assignMultipliers() {
       const allTiles = [];
       CATEGORIES.forEach(cat => {
@@ -394,7 +368,6 @@
       gameState.dailyTripleTileId = shuffled[1];
     }
 
-    // Initialize/Reset Game
     function initGame() {
       gameState.usedTiles.clear();
       gameState.currentTile = null;
@@ -404,55 +377,38 @@
       renderBoard();
     }
 
-    // ==========================================
-    // 4. UI RENDER FUNCTIONS
-    // ==========================================
-    
-    // Render Team Scorecards
     function renderTeams() {
       const container = document.getElementById("teams-container");
       container.innerHTML = "";
-
       gameState.teams.forEach((team, index) => {
         const card = document.createElement("div");
         card.className = "flex items-center gap-2 bg-slate-800 border border-slate-700 px-3 py-2 rounded-xl flex-shrink-0 shadow";
-        
         card.innerHTML = `
           <div class="flex flex-col">
-            <input type="text" value="${team.name}" data-team="${index}" 
-              class="team-name-input text-xs font-bold bg-transparent text-slate-200 focus:text-white focus:outline-none w-24 truncate" />
-            <span class="text-lg font-black ${team.score >= 0 ? 'text-emerald-400' : 'text-rose-400'} font-mono">
-              $${team.score}
-            </span>
+            <input type="text" value="${team.name}" data-team="${index}" class="team-name-input text-xs font-bold bg-transparent text-slate-200 focus:text-white focus:outline-none w-24 truncate" />
+            <span class="text-lg font-black ${team.score >= 0 ? 'text-emerald-400' : 'text-rose-400'} font-mono">$${team.score}</span>
           </div>
           <div class="flex flex-col gap-1 border-l border-slate-700 pl-2">
-            <button onclick="adjustScore(${index}, 100)" class="text-[10px] bg-emerald-950 hover:bg-emerald-900 border border-emerald-700 text-emerald-300 font-bold px-1.5 py-0.5 rounded">
-              +$100
-            </button>
-            <button onclick="adjustScore(${index}, -100)" class="text-[10px] bg-rose-950 hover:bg-rose-900 border border-rose-700 text-rose-300 font-bold px-1.5 py-0.5 rounded">
-              -$100
-            </button>
+            <button onclick="adjustScore(${index}, 100)" class="text-[10px] bg-emerald-950 hover:bg-emerald-900 border border-emerald-700 text-emerald-300 font-bold px-1.5 py-0.5 rounded">+$100</button>
+            <button onclick="adjustScore(${index}, -100)" class="text-[10px] bg-rose-950 hover:bg-rose-900 border border-rose-700 text-rose-300 font-bold px-1.5 py-0.5 rounded">-$100</button>
           </div>
         `;
         container.appendChild(card);
       });
 
-      // Bind name change inputs
       document.querySelectorAll(".team-name-input").forEach(input => {
         input.addEventListener("change", (e) => {
           const idx = parseInt(e.target.dataset.team);
           gameState.teams[idx].name = e.target.value;
-          renderAwardButtons();
+          if (gameState.currentTile) renderAwardButtons();
         });
       });
     }
 
-    // Render 8-Column Jeopardy Grid
     function renderBoard() {
       const board = document.getElementById("jeopardy-board");
       board.innerHTML = "";
 
-      // 1. Render Category Headers
       CATEGORIES.forEach(cat => {
         const header = document.createElement("div");
         header.className = "bg-gradient-to-b from-indigo-900 to-slate-900 border-2 border-indigo-500/40 rounded-xl p-3 text-center flex items-center justify-center min-h-[70px] shadow-lg";
@@ -460,7 +416,6 @@
         board.appendChild(header);
       });
 
-      // 2. Render Money Value Rows
       POINT_VALUES.forEach(val => {
         CATEGORIES.forEach(cat => {
           const tileId = `${cat}-${val}`;
@@ -482,15 +437,11 @@
       });
     }
 
-    // Adjust Team Score
     window.adjustScore = function(teamIdx, amount) {
       gameState.teams[teamIdx].score += amount;
       renderTeams();
     };
 
-    // ==========================================
-    // 5. QUESTION MODAL ENGINE & TIMERS
-    // ==========================================
     function openQuestion(cat, val, tileId) {
       const isDD = tileId === gameState.dailyDoubleTileId;
       const isDT = tileId === gameState.dailyTripleTileId;
@@ -508,9 +459,7 @@
         qIndex: selectedQIndex
       };
 
-      // Populate Modal Content
       document.getElementById("modal-category").textContent = cat;
-      
       let effectiveValText = `$${val}`;
       if (isDD) effectiveValText += ` (2X = $${val * 2})`;
       if (isDT) effectiveValText += ` (3X = $${val * 3})`;
@@ -519,7 +468,6 @@
       document.getElementById("modal-question").textContent = qData.q;
       document.getElementById("modal-answer").textContent = qData.a;
 
-      // Handle Multiplier Banner
       const banner = document.getElementById("multiplier-banner");
       if (isDD || isDT) {
         banner.classList.remove("hidden");
@@ -529,18 +477,12 @@
         banner.classList.add("hidden");
       }
 
-      // Hide Answer Box
       document.getElementById("modal-answer-box").classList.add("hidden");
       renderAwardButtons();
-
-      // Reset and Start Countdown Timer
       startTimer(30);
-
-      // Open Modal
       document.getElementById("modal-overlay").classList.remove("hidden");
     }
 
-    // Render Dynamic Award Buttons in Modal
     function renderAwardButtons() {
       const container = document.getElementById("award-buttons-container");
       container.innerHTML = "";
@@ -553,12 +495,11 @@
       gameState.teams.forEach((team, idx) => {
         const btnGroup = document.createElement("div");
         btnGroup.className = "flex items-center rounded-lg overflow-hidden border border-slate-700";
-        
         btnGroup.innerHTML = `
           <button onclick="awardPoints(${idx}, ${points})" class="px-3 py-1.5 bg-emerald-900 hover:bg-emerald-800 text-emerald-200 font-bold text-xs flex items-center gap-1 transition">
             <span>✓</span> ${team.name} (+${points})
           </button>
-          <button onclick="awardPoints(${idx}, -${points})" class="px-2 py-1.5 bg-rose-950 hover:bg-rose-900 text-rose-300 font-bold text-xs border-l border-slate-700 transition" title="Deduct points">
+          <button onclick="awardPoints(${idx}, -${points})" class="px-2 py-1.5 bg-rose-950 hover:bg-rose-900 text-rose-300 font-bold text-xs border-l border-slate-700 transition">
             -${points}
           </button>
         `;
@@ -566,12 +507,11 @@
       });
     }
 
-    // Award / Deduct Points & Mark Tile Used
     window.awardPoints = function(teamIdx, amount) {
       gameState.teams[teamIdx].score += amount;
       if (amount > 0) {
         soundEngine.playCorrect();
-        triggerConfetti();
+        if (window.confetti) confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
       } else {
         soundEngine.playWrong();
       }
@@ -579,23 +519,20 @@
       closeModal(true);
     };
 
-    // Countdown Timer Helper
     function startTimer(seconds) {
       clearInterval(gameState.timerInterval);
       gameState.timeLeft = seconds;
       const display = document.getElementById("timer-display");
       display.textContent = gameState.timeLeft;
-      display.classList.remove("text-rose-500", "animate-ping");
+      display.classList.remove("text-rose-500");
 
       gameState.timerInterval = setInterval(() => {
         gameState.timeLeft--;
         display.textContent = gameState.timeLeft;
-
         if (gameState.timeLeft <= 5 && gameState.timeLeft > 0) {
           soundEngine.playTone(440, 0.08, 'sine', 0.1);
           display.classList.add("text-rose-500");
         }
-
         if (gameState.timeLeft <= 0) {
           clearInterval(gameState.timerInterval);
           soundEngine.playWrong();
@@ -604,7 +541,6 @@
       }, 1000);
     }
 
-    // Close Modal Helper
     function closeModal(markUsed = true) {
       clearInterval(gameState.timerInterval);
       if (markUsed && gameState.currentTile) {
@@ -614,29 +550,9 @@
       document.getElementById("modal-overlay").classList.add("hidden");
     }
 
-    // Confetti FX
-    function triggerConfetti() {
-      if (window.confetti) {
-        confetti({
-          particleCount: 80,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
-      }
-    }
-
-    // ==========================================
-    // 6. QUESTION ISSUE / REDRAW & VOID LOGIC
-    // ==========================================
     function drawReplacementQuestion() {
       const { cat, val, qIndex } = gameState.currentTile;
       const qList = TRIVIA_BANK[cat][val];
-
-      if (qList.length <= 1) {
-        alert("No alternate questions available for this category and value!");
-        return;
-      }
-
       let newIdx = (qIndex + 1) % qList.length;
       gameState.currentTile.qIndex = newIdx;
       const newQ = qList[newIdx];
@@ -654,15 +570,10 @@
       closeModal(true);
     }
 
-    // ==========================================
-    // 7. EVENT LISTENERS & SETUP
-    // ==========================================
     document.addEventListener("DOMContentLoaded", () => {
-      // Team Count Selector
       document.getElementById("team-count-select").addEventListener("change", (e) => {
         const count = parseInt(e.target.value);
         const currentCount = gameState.teams.length;
-
         if (count > currentCount) {
           for (let i = currentCount + 1; i <= count; i++) {
             gameState.teams.push({ name: `Team ${i}`, score: 0 });
@@ -674,7 +585,6 @@
         if (gameState.currentTile) renderAwardButtons();
       });
 
-      // Reset Game Button
       document.getElementById("reset-game-btn").addEventListener("click", () => {
         if (confirm("Reset the game board and all team scores?")) {
           gameState.teams.forEach(t => t.score = 0);
@@ -682,28 +592,20 @@
         }
       });
 
-      // Modal Controls
       document.getElementById("reveal-answer-btn").addEventListener("click", () => {
         document.getElementById("modal-answer-box").classList.remove("hidden");
       });
 
-      document.getElementById("close-modal-btn").addEventListener("click", () => {
-        closeModal(true);
-      });
-
-      // Question Issue Popup Controls
+      document.getElementById("close-modal-btn").addEventListener("click", () => closeModal(true));
       document.getElementById("mark-wrong-btn").addEventListener("click", () => {
         document.getElementById("issue-modal-overlay").classList.remove("hidden");
       });
-
       document.getElementById("cancel-issue-btn").addEventListener("click", () => {
         document.getElementById("issue-modal-overlay").classList.add("hidden");
       });
-
       document.getElementById("draw-replacement-btn").addEventListener("click", drawReplacementQuestion);
       document.getElementById("void-tile-btn").addEventListener("click", voidCurrentTile);
 
-      // Start Game
       initGame();
     });
   </script>
