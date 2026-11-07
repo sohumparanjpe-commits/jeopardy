@@ -11,19 +11,22 @@
     ::-webkit-scrollbar-track { background: #0f172a; }
     ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #475569; }
-    
+
     .jeopardy-grid {
       display: grid;
       grid-template-columns: repeat(9, minmax(135px, 1fr));
       gap: 0.6rem;
     }
+
     @keyframes pulse-glow {
       0%, 100% { box-shadow: 0 0 15px rgba(234, 179, 8, 0.4); }
       50% { box-shadow: 0 0 30px rgba(234, 179, 8, 0.85); }
     }
+
     .daily-multiplier-glow { animation: pulse-glow 2s infinite; }
   </style>
 </head>
+
 <body class="h-full text-slate-100 flex flex-col font-sans select-none overflow-x-hidden bg-slate-950">
 
   <!-- HEADER BAR -->
@@ -38,6 +41,7 @@
           <p class="text-xs text-slate-400 font-medium">9 Categories • Hardcoded Difficulty Scaling ($100-$1000) • Daily Multipliers</p>
         </div>
       </div>
+
       <button id="reset-game-btn" class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg text-sm transition shadow-md flex items-center gap-2">
         <span>🔄</span> Reset Game
       </button>
@@ -51,6 +55,7 @@
         <div class="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-wider">
           <span>🏆</span> Standings
         </div>
+
         <div class="flex items-center gap-2">
           <label class="text-xs text-slate-400 font-semibold">Teams Count:</label>
           <select id="team-count-select" class="bg-slate-800 text-amber-300 font-bold text-xs rounded border border-slate-700 px-2 py-1 focus:outline-none">
@@ -67,6 +72,7 @@
           </select>
         </div>
       </div>
+
       <div id="teams-container" class="flex items-center gap-3 overflow-x-auto pb-1"></div>
     </div>
   </section>
@@ -81,12 +87,13 @@
   <!-- QUESTION & ANSWER MODAL -->
   <div id="modal-overlay" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-slate-900 border-2 border-amber-500/50 rounded-2xl max-w-2xl w-full p-6 shadow-2xl relative flex flex-col gap-5 max-h-[90vh] overflow-y-auto">
-      
+
       <div class="flex items-center justify-between border-b border-slate-800 pb-4">
         <div class="flex items-center gap-3">
           <span id="modal-category" class="bg-amber-500/10 text-amber-400 text-xs font-bold px-3 py-1 rounded-full border border-amber-500/30 uppercase tracking-wide">Category</span>
           <span id="modal-value" class="bg-emerald-500/10 text-emerald-400 text-xs font-bold px-3 py-1 rounded-full border border-emerald-500/30">$100</span>
         </div>
+
         <div id="timer-box" class="flex items-center gap-2 bg-slate-800 px-3 py-1 rounded-lg border border-slate-700">
           <span class="text-xs text-slate-400">⏱️ Time:</span>
           <span id="timer-display" class="font-mono text-lg font-bold text-amber-400">30</span>
@@ -116,10 +123,12 @@
         <button id="reveal-answer-btn" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg text-sm transition shadow-lg flex items-center gap-2">
           👁️ Reveal Answer
         </button>
+
         <div class="flex items-center gap-2">
           <button id="mark-wrong-btn" class="px-3 py-2 bg-rose-950 hover:bg-rose-900 border border-rose-700/50 text-rose-300 font-bold rounded-lg text-xs transition flex items-center gap-1.5">
             ⚠️ Question Issue
           </button>
+
           <button id="close-modal-btn" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-lg text-sm transition">
             Close Tile
           </button>
@@ -132,18 +141,23 @@
   <!-- QUESTION ISSUE MODAL -->
   <div id="issue-modal-overlay" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-5 shadow-2xl flex flex-col gap-4">
+
       <h3 class="text-lg font-bold text-amber-400 flex items-center gap-2">
         <span>⚠️</span> Question Options
       </h3>
+
       <p class="text-xs text-slate-300">Choose an action below for this question:</p>
+
       <div class="flex flex-col gap-2.5">
         <button id="draw-replacement-btn" class="w-full py-2.5 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold text-xs rounded-lg transition flex items-center justify-center gap-2">
           🔄 Draw Alternate Question
         </button>
+
         <button id="void-tile-btn" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-lg transition border border-slate-600 flex items-center justify-center gap-2">
           🚫 Void Tile (Mark Used, No Points)
         </button>
       </div>
+
       <div class="flex justify-end pt-2 border-t border-slate-800">
         <button id="cancel-issue-btn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs rounded font-semibold">Cancel</button>
       </div>
@@ -154,53 +168,70 @@
   <script src="questions.js"></script>
 
   <script>
+    // CATEGORY NAMES MUST MATCH QUESTIONS.JS EXACTLY
     const CATEGORIES = [
       "Math",
       "Science",
-      "English Literature",
+      "English",
       "History",
-      "Diwali & Hinduism",
+      "Diwali and Hinduism",
       "Potpourri",
-      "Complete Bollywood Title",
-      "Bad Movie Plots",
-      "Bollywood Movie Plots"
+      "Complete the Bollywood Movie Title",
+      "Guess the Hollywood Movie Based on a Bad Movie Plot",
+      "Bollywood Movie Based on a Bad Movie Plot"
     ];
 
     const POINT_VALUES = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
 
     // SOUND FX SYNTH
     class SoundFX {
-      constructor() { this.ctx = null; }
-      init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
+      constructor() {
+        this.ctx = null;
+      }
+
+      init() {
+        if (!this.ctx) {
+          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+      }
+
       playTone(freq, duration, type = 'sine', volume = 0.15) {
         try {
           this.init();
+
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
+
           osc.type = type;
           osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
           gain.gain.setValueAtTime(volume, this.ctx.currentTime);
           gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+
           osc.connect(gain);
           gain.connect(this.ctx.destination);
+
           osc.start();
           osc.stop(this.ctx.currentTime + duration);
-        } catch(e){}
+        } catch(e) {}
       }
+
       playCorrect() {
         this.playTone(523.25, 0.15, 'triangle', 0.2);
         setTimeout(() => this.playTone(659.25, 0.25, 'triangle', 0.2), 120);
       }
+
       playWrong() {
         this.playTone(200, 0.2, 'sawtooth', 0.15);
         setTimeout(() => this.playTone(150, 0.3, 'sawtooth', 0.15), 150);
       }
+
       playDailyMultiplier() {
         [261.63, 329.63, 392.00, 523.25, 659.25].forEach((freq, idx) => {
           setTimeout(() => this.playTone(freq, 0.2, 'square', 0.15), idx * 90);
         });
       }
     }
+
     const soundEngine = new SoundFX();
 
     // GAME STATE
@@ -220,12 +251,15 @@
 
     function assignMultipliers() {
       const allTiles = [];
+
       CATEGORIES.forEach(cat => {
         POINT_VALUES.forEach(val => {
           allTiles.push(`${cat}-${val}`);
         });
       });
+
       const shuffled = [...allTiles].sort(() => 0.5 - Math.random());
+
       gameState.dailyDoubleTileId = shuffled[0];
       gameState.dailyTripleTileId = shuffled[1];
     }
@@ -233,7 +267,9 @@
     function initGame() {
       gameState.usedTiles.clear();
       gameState.currentTile = null;
+
       clearInterval(gameState.timerInterval);
+
       assignMultipliers();
       renderTeams();
       renderBoard();
@@ -242,27 +278,36 @@
     function renderTeams() {
       const container = document.getElementById("teams-container");
       container.innerHTML = "";
+
       gameState.teams.forEach((team, index) => {
         const card = document.createElement("div");
+
         card.className = "flex items-center gap-2 bg-slate-800 border border-slate-700 px-3 py-2 rounded-xl flex-shrink-0 shadow";
+
         card.innerHTML = `
           <div class="flex flex-col">
             <input type="text" value="${team.name}" data-team="${index}" class="team-name-input text-xs font-bold bg-transparent text-slate-200 focus:text-white focus:outline-none w-24 truncate" />
             <span class="text-lg font-black ${team.score >= 0 ? 'text-emerald-400' : 'text-rose-400'} font-mono">$${team.score}</span>
           </div>
+
           <div class="flex flex-col gap-1 border-l border-slate-700 pl-2">
             <button onclick="adjustScore(${index}, 100)" class="text-[10px] bg-emerald-950 hover:bg-emerald-900 border border-emerald-700 text-emerald-300 font-bold px-1.5 py-0.5 rounded">+$100</button>
             <button onclick="adjustScore(${index}, -100)" class="text-[10px] bg-rose-950 hover:bg-rose-900 border border-rose-700 text-rose-300 font-bold px-1.5 py-0.5 rounded">-$100</button>
           </div>
         `;
+
         container.appendChild(card);
       });
 
       document.querySelectorAll(".team-name-input").forEach(input => {
         input.addEventListener("change", (e) => {
           const idx = parseInt(e.target.dataset.team);
+
           gameState.teams[idx].name = e.target.value;
-          if (gameState.currentTile) renderAwardButtons();
+
+          if (gameState.currentTile) {
+            renderAwardButtons();
+          }
         });
       });
     }
@@ -273,8 +318,10 @@
 
       CATEGORIES.forEach(cat => {
         const header = document.createElement("div");
+
         header.className = "bg-gradient-to-b from-indigo-900 to-slate-900 border-2 border-indigo-500/40 rounded-xl p-3 text-center flex items-center justify-center min-h-[70px] shadow-lg";
         header.innerHTML = `<span class="text-xs md:text-sm font-black uppercase text-amber-300 leading-tight tracking-wider">${cat}</span>`;
+
         board.appendChild(header);
       });
 
@@ -285,15 +332,17 @@
 
           const tile = document.createElement("button");
           tile.disabled = isUsed;
-          
+
           if (isUsed) {
             tile.className = "bg-slate-900/40 border border-slate-800 rounded-xl p-4 text-center cursor-not-allowed opacity-30 flex items-center justify-center min-h-[60px]";
             tile.innerHTML = `<span class="text-sm font-bold text-slate-600 line-through">$${val}</span>`;
           } else {
             tile.className = "bg-slate-900 hover:bg-indigo-950 border-2 border-slate-700 hover:border-amber-400 rounded-xl p-4 text-center transition-all duration-200 transform hover:-translate-y-1 shadow-lg flex items-center justify-center min-h-[60px] group cursor-pointer";
             tile.innerHTML = `<span class="text-xl md:text-2xl font-black text-amber-400 group-hover:text-amber-300 font-mono tracking-wider">$${val}</span>`;
+
             tile.onclick = () => openQuestion(cat, val, tileId);
           }
+
           board.appendChild(tile);
         });
       });
@@ -325,26 +374,35 @@
       };
 
       document.getElementById("modal-category").textContent = cat;
+
       let effectiveValText = `$${val}`;
+
       if (isDD) effectiveValText += ` (2X = $${val * 2})`;
       if (isDT) effectiveValText += ` (3X = $${val * 3})`;
+
       document.getElementById("modal-value").textContent = effectiveValText;
 
       document.getElementById("modal-question").textContent = qData.q;
       document.getElementById("modal-answer").textContent = qData.a;
 
       const banner = document.getElementById("multiplier-banner");
+
       if (isDD || isDT) {
         banner.classList.remove("hidden");
-        document.getElementById("multiplier-title").textContent = isDD ? "⭐ DAILY DOUBLE ⭐" : "🔥 DAILY TRIPLE 🔥";
+
+        document.getElementById("multiplier-title").textContent =
+          isDD ? "⭐ DAILY DOUBLE ⭐" : "🔥 DAILY TRIPLE 🔥";
+
         soundEngine.playDailyMultiplier();
       } else {
         banner.classList.add("hidden");
       }
 
       document.getElementById("modal-answer-box").classList.add("hidden");
+
       renderAwardButtons();
       startTimer(30);
+
       document.getElementById("modal-overlay").classList.remove("hidden");
     }
 
@@ -353,51 +411,67 @@
       container.innerHTML = "";
 
       const { val, isDailyDouble, isDailyTriple } = gameState.currentTile;
+
       let points = val;
+
       if (isDailyDouble) points *= 2;
       if (isDailyTriple) points *= 3;
 
       gameState.teams.forEach((team, idx) => {
         const btnGroup = document.createElement("div");
+
         btnGroup.className = "flex items-center rounded-lg overflow-hidden border border-slate-700";
+
         btnGroup.innerHTML = `
           <button onclick="awardPoints(${idx}, ${points})" class="px-3 py-1.5 bg-emerald-900 hover:bg-emerald-800 text-emerald-200 font-bold text-xs flex items-center gap-1 transition">
             <span>✓</span> ${team.name} (+${points})
           </button>
+
           <button onclick="awardPoints(${idx}, -${points})" class="px-2 py-1.5 bg-rose-950 hover:bg-rose-900 text-rose-300 font-bold text-xs border-l border-slate-700 transition">
             -${points}
           </button>
         `;
+
         container.appendChild(btnGroup);
       });
     }
 
     window.awardPoints = function(teamIdx, amount) {
       gameState.teams[teamIdx].score += amount;
+
       if (amount > 0) {
         soundEngine.playCorrect();
-        if (window.confetti) confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+
+        if (window.confetti) {
+          confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+        }
       } else {
         soundEngine.playWrong();
       }
+
       renderTeams();
       closeModal(true);
     };
 
     function startTimer(seconds) {
       clearInterval(gameState.timerInterval);
+
       gameState.timeLeft = seconds;
+
       const display = document.getElementById("timer-display");
+
       display.textContent = gameState.timeLeft;
       display.classList.remove("text-rose-500");
 
       gameState.timerInterval = setInterval(() => {
         gameState.timeLeft--;
         display.textContent = gameState.timeLeft;
+
         if (gameState.timeLeft <= 5 && gameState.timeLeft > 0) {
           soundEngine.playTone(440, 0.08, 'sine', 0.1);
           display.classList.add("text-rose-500");
         }
+
         if (gameState.timeLeft <= 0) {
           clearInterval(gameState.timerInterval);
           soundEngine.playWrong();
@@ -408,25 +482,33 @@
 
     function closeModal(markUsed = true) {
       clearInterval(gameState.timerInterval);
+
       if (markUsed && gameState.currentTile) {
         gameState.usedTiles.add(gameState.currentTile.tileId);
         renderBoard();
       }
+
       document.getElementById("modal-overlay").classList.add("hidden");
     }
 
     function drawReplacementQuestion() {
       const { cat, val, qIndex } = gameState.currentTile;
+
       const qList = window.EXPLICIT_BANKS[cat][val];
+
       let newIdx = (qIndex + 1) % qList.length;
+
       gameState.currentTile.qIndex = newIdx;
+
       const newQ = qList[newIdx];
 
       document.getElementById("modal-question").textContent = newQ.q;
       document.getElementById("modal-answer").textContent = newQ.a;
+
       document.getElementById("modal-answer-box").classList.add("hidden");
 
       startTimer(30);
+
       document.getElementById("issue-modal-overlay").classList.add("hidden");
     }
 
@@ -436,9 +518,11 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
+
       document.getElementById("team-count-select").addEventListener("change", (e) => {
         const count = parseInt(e.target.value);
         const currentCount = gameState.teams.length;
+
         if (count > currentCount) {
           for (let i = currentCount + 1; i <= count; i++) {
             gameState.teams.push({ name: `Team ${i}`, score: 0 });
@@ -446,8 +530,12 @@
         } else if (count < currentCount) {
           gameState.teams = gameState.teams.slice(0, count);
         }
+
         renderTeams();
-        if (gameState.currentTile) renderAwardButtons();
+
+        if (gameState.currentTile) {
+          renderAwardButtons();
+        }
       });
 
       document.getElementById("reset-game-btn").addEventListener("click", () => {
@@ -462,12 +550,15 @@
       });
 
       document.getElementById("close-modal-btn").addEventListener("click", () => closeModal(true));
+
       document.getElementById("mark-wrong-btn").addEventListener("click", () => {
         document.getElementById("issue-modal-overlay").classList.remove("hidden");
       });
+
       document.getElementById("cancel-issue-btn").addEventListener("click", () => {
         document.getElementById("issue-modal-overlay").classList.add("hidden");
       });
+
       document.getElementById("draw-replacement-btn").addEventListener("click", drawReplacementQuestion);
       document.getElementById("void-tile-btn").addEventListener("click", voidCurrentTile);
 
